@@ -3,21 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 import fake_useragent
 import re
-import lxml
-
-'''
-Допустим, что нам надо подключиться к серверу, авторизоваться и поддерживать сессию.
- В браузере это выглядит следующим образом:
-
-1.На адрес http://localhost:8080/login отправляется пустой GET запрос.
-2.Сервер присылает формочку для заполнения логина и пароля,
- а также присылает Cookie вида «JSESSIONID=094BC0A489335CF8EE58C8E7846FE49B».
-3.Заполнив логин и пароль, на сервер отправляется POST запрос с полученной ранее Cookie,
- со строкой в выходном потоке «username=Fox&password=123».
-  В Headers дополнительно указывается «Content-Type: application/x-www-form-urlencoded».
-4.В ответ сервер нам присылает новую cookie c новым «JSESSIONID=».
- Сразу же происходит переадресация на http://localhost:8080/ путём GET запроса с новой Cookie.
-5.Далее можно спокойно использовать остальное API сервера, передавая последнее Cookie в каждом запросе.'''
 
 
 def get_diary_page_data():
@@ -54,7 +39,26 @@ def get_diary_page_data():
             cookies = response.cookies.get_dict()  # Получаем данные с сервера для парсинга
         else:
             print('Ошибка при отправке запроса, вкладка - "Дневник"!')
+
+        # Запрашиваем у пользователя информацию о выборе недели.
+        user_week_data = input(f'Укажите за какую неделю вы хотите получить данные!\n1 - За текущую неделю\n'
+                               f'2 - За следующию неделю\n'
+                               f'Введите число: ')
         soup = BeautifulSoup(response.text, 'lxml')
+
+        if user_week_data == '1':
+            soup = soup
+        elif user_week_data == '2':
+            # находим ссылку для страницы на следующей недели
+            next_week_url = soup.find('div', class_='week-selector clearfix').find_all('a')[-1].get('href')
+            response = session.get('https://my.e-klase.lv/' + next_week_url,
+                                   cookies=cookies)  # Заходим на страницу следующей недели
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'lxml')
+            else:
+                print('Ошибка при отправке запроса на информацию о следующей недели!')
+        else:
+            print('Вы ввели неправильную команду!')
 
         return soup
 
@@ -66,6 +70,7 @@ def get_diary_days_data():
     count = 0
     for date in dates:
         dates_list.append(date.text.strip())
+
     day_data = week_data.find_all('table', class_='lessons-table')
     for i in day_data:
         print()
@@ -116,4 +121,3 @@ def get_diary_days_data():
 for data in get_diary_days_data():
     print(f'{data}')
     print('---' * 20)
-#     main()
