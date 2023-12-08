@@ -20,7 +20,7 @@ async def start_command(message: types.Message):
                         " Да ты ж моя умница. Череп не жмёт?")
 
 @dp.message_handler()
-async  def get_weather(message: types.Message):
+async def get_weather(message: types.Message):
     try:
         r = requests.get(
             f"https://api.openweathermap.org/data/2.5/weather?q={message.text}&appid={open_weather_token}&units=metric"
