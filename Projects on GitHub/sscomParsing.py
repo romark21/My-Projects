@@ -41,11 +41,10 @@ def get_url():
         data = soup.find_all('div', class_='d1')
         count += 1
         for i in data:
-            card_url = i.find('a') # href найдём после проверки тега "а" ниже.
-            if not card_url: #Праверяем если в item вложенное "а".Если элемент не будет найден, то find вернет None,
-                # а у объекта None нет атрибута get.
+            card_url = i.find('a')
+            if not card_url: 
                 continue
-            url = 'https://www.ss.lv' + card_url.get('href') # теперь после проверки можем применять "get"
+            url = 'https://www.ss.lv' + card_url.get('href')
             yield url
 
 for i, url in enumerate(get_url(), 1):
@@ -55,9 +54,9 @@ for i, url in enumerate(get_url(), 1):
 
     data = soup.find('div', {'id': 'msg_div_msg'})
 
-    try: #Проверяем соответствуют ли данные нашему запросу, если да присвоиваем
-        year = data.find('td', {'id': 'tdo_18'}).text #, если да присвоиваем, тогда добавляем в переменную
-    except AttributeError: #Если возникнет ошибка, тогда присвоим переменной другое значени и цикл не прирвётся
+    try: 
+        year = data.find('td', {'id': 'tdo_18'}).text 
+    except AttributeError: 
         year = "--------"
 
     try:

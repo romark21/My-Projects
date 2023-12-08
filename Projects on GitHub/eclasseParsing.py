@@ -15,32 +15,32 @@ def get_diary_page_data():
         'UserName': str(username),
         'Password': str(password)
     }
-    with requests.session() as session:  # Создаём сессию(Продвинутый вариант).Обычный: session = requests.session()
+    with requests.session() as session:  
         session.get(url)  # Получаем Куки
-        response = session.post(url, data=data, headers=header)  # Логинимся
+        response = session.post(url, data=data, headers=header)  
         if response.status_code == 200:
-            cookies = response.cookies.get_dict()  # Получаем куки из ответа сервера
+            cookies = response.cookies.get_dict()  
         else:
             print('Ошибка при отправке запроса для авторизации!')
 
-        # Переходим на страницу с кнопками, использую куки
+        # Go to the page with the buttons, using cookies
         buttons_url = 'https://my.e-klase.lv/SessionContext/SwitchStudentWithFamilyStudentAutoAdd'
         response = session.get(buttons_url, cookies=cookies)
         if response.status_code == 200:
-            cookies = response.cookies.get_dict()  # Получаем куки из ответа сервера
+            cookies = response.cookies.get_dict()  
         else:
             print('Ошибка при отправке запроса в окне выбора профиля!')
 
-        # Переходим на страницу Дневника, использую куки
+        # Go to the Diary page, using cookies.
         diary = 'https://my.e-klase.lv/Family/Diary'
         diary = re.sub(r'>\s+<', '><', diary.replace('\n', ''))
         response = session.get(diary, cookies=cookies)
         if response.status_code == 200:
-            cookies = response.cookies.get_dict()  # Получаем данные с сервера для парсинга
+            cookies = response.cookies.get_dict()  
         else:
             print('Ошибка при отправке запроса, вкладка - "Дневник"!')
 
-        # Запрашиваем у пользователя информацию о выборе недели.
+        # Prompt the user for information about the week selection.
         user_week_data = input(f'Укажите за какую неделю вы хотите получить данные!\n1 - За текущую неделю\n'
                                f'2 - За следующию неделю\n'
                                f'Введите число: ')
@@ -49,10 +49,10 @@ def get_diary_page_data():
         if user_week_data == '1':
             soup = soup
         elif user_week_data == '2':
-            # находим ссылку для страницы на следующей недели
+            #find the link for next week's page
             next_week_url = soup.find('div', class_='week-selector clearfix').find_all('a')[-1].get('href')
             response = session.get('https://my.e-klase.lv/' + next_week_url,
-                                   cookies=cookies)  # Заходим на страницу следующей недели
+                                   cookies=cookies)  # Check out next week's page
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'lxml')
             else:
