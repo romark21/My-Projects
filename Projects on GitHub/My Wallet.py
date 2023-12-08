@@ -49,7 +49,7 @@ def new_datas_csv():
 
 
 def read_wallet_data_csv():
-    read_csv = pd.read_csv('../../pythonProject1/ООП/wallet_income_data.csv', delimiter=',')
+    read_csv = pd.read_csv('wallet_income_data.csv', delimiter=',')
     return read_csv
 
 
@@ -63,7 +63,7 @@ class Wallet:
     wallet_data = {'summa': [], 'description': [], 'date': []}
 
 
-wallet = Wallet()
 
-new_datas_csv()
+
+
 
