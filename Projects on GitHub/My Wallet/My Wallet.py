@@ -1,11 +1,13 @@
 from datetime import datetime
 import pandas as pd
 
+current_datetime = (a := datetime.now()).strftime("%H:%M:%S %d-%m-%Y")
+
 
 def money_in():
     income_sum = float(input('Enter the price of income: '))
     income_description = input(f'Enter a description of your income: ')
-    income_data = {'summa': [income_sum], 'description': [income_description], 'date': [Wallet.current_datetime]}
+    income_data = {'summa': [income_sum], 'description': [income_description], 'date': [current_datetime]}
     overwrite_income_data_csv(income_data)
     print(f"In your wallet added {income_sum:.2f}€ for {income_description}.")
     print('---' * 20)
@@ -15,7 +17,7 @@ def money_in():
 def money_out():
     outcome_sum = float(input('Enter the price of outcome: '))
     outcome_description = input(f'Enter a description of your outcome: ')
-    outcome_data = {'summa': [outcome_sum], 'description': [outcome_description], 'date': [Wallet.current_datetime]}
+    outcome_data = {'summa': [outcome_sum], 'description': [outcome_description], 'date': [current_datetime]}
     overwrite_outcome_data_csv(outcome_data)
     print(f"You spent {outcome_sum:.2f}€ to {outcome_description}.")
     print('---' * 20)
@@ -76,7 +78,6 @@ def get_wallet_data(func):
 
 
 class Wallet:
-    current_datetime = (a := datetime.now()).strftime("%H:%M:%S %d-%m-%Y")
     template_wallet_data = {'summa': [], 'description': [], 'date': []}
     try:
         wallet_total_income = sum(read_income_data_csv()['summa'])
@@ -88,5 +89,4 @@ class Wallet:
         wallet_balance = 0.00
 
 
-money_in()
-money_out()
+balance()
